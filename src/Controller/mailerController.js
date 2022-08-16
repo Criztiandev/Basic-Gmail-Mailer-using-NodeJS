@@ -1,6 +1,8 @@
 const nodeMailer = require("nodemailer");
 const sendEmail = async (req, res) => {
   try {
+    const { email, subject, message } = req.body;
+
     const mailTransporter = await nodeMailer.createTransport({
       service: process.env.SERVICE,
       secure: process.env.SECURE,
@@ -12,15 +14,21 @@ const sendEmail = async (req, res) => {
 
     await mailTransporter.sendMail({
       from: process.env.USER,
-      to: "criztiandev@gmail.com",
-      subject: "Greetings",
-      text: "Test Email using nodeJS",
+      to: email,
+      subject: subject,
+      text: message,
     });
-
-    console.log("Email Send Successfully");
+    res.status(200).json({
+      message: message,
+      to: email,
+      status: "successful",
+    });
   } catch (e) {
-    res.status(400);
     console.log(e);
+    res.status(400).json({
+      error: e.error,
+      status: failed,
+    });
   }
 };
 
